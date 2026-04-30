@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  AWAITING_VERIFICATION
+  PAID
+}
+
+enum PaymentMethod {
+  STRIPE
+  PROMPTPAY
+}
+
+enum TransferType {
+  PROMPTPAY
+  BANK_ACCOUNT
+}
+
+/// Singleton — content for the customer-facing site (admin-editable)
+model SiteSetting {
+  id              String   @id @default("default")
+
+  // Brand
+  hotelName       String   @default("Aurelia")
+  brandTagline    String   @default("HOTEL")
+
+  // Hero (homepage)
+  heroEyebrow     String   @default("BOUTIQUE · HERITAGE · SERENE")
+  heroTitle       String   @default("ประสบการณ์การพักผ่อน")
+  heroTitleAccent String   @default("เหนือระดับ")
+  heroSubtitle    String   @default("จองห้องพักโดยตรงผ่านเว็บไซต์ทางการของเรา รับราคาดีที่สุด พร้อมการยืนยันทันที โดยไม่ผ่านตัวกลาง")
+  heroImageUrl    String   @default("https://images.unsplash.com/photo-1566073771259-6a8506099945?w=2000&q=85")
+  heroCtaPrimary  String   @default("จองห้องพัก")
+  heroCtaSecondary String  @default("ดูห้องพัก")
+
+  // Why-book-direct features (3 items)
+  feature1Title   String   @default("ราคาดีที่สุดรับรอง")
+  feature1Desc    String   @default("จองตรงไม่ผ่านตัวกลาง ไม่มีค่าคอมมิชชั่นแอบแฝง — ราคาที่คุณเห็นคือราคาที่จ่าย")
+  feature2Title   String   @default("ยืนยันทันที")
+  feature2Desc    String   @default("ระบบยืนยันการจองอัตโนมัติพร้อมอีเมลรายละเอียดเข้าพัก ไม่ต้องรอตอบกลับ")
+  feature3Title   String   @default("บริการระดับมืออาชีพ")
+  feature3Desc    String   @default("ทีมงานพร้อมดูแลตลอด 24 ชั่วโมง ติดต่อโดยตรงโดยไม่ผ่านบุคคลที่สาม")
+
+  // Contact / footer
+  footerTagline   String   @default("โรงแรมหรูระดับบูทีก ใจกลางเมือง บริการระดับมืออาชีพ จองโดยตรงเพื่อราคาดีที่สุดและไม่มีค่าธรรมเนียมตัวกลาง")
+  contactAddress  String   @default("123 ถนนสุขุมวิท กรุงเทพฯ 10110")
+  contactPhone    String   @default("02-000-0000")
+  contactEmail    String   @default("info@hotel.com")
+
+  // Booking policy text (shown on guest payment confirmation step)
+  cancellationPolicy String @default("การจองทุกรายการ ไม่สามารถขอคืนเงินได้ในทุกกรณี (All sales final)")
+  checkInTime      String  @default("ตั้งแต่ 14:00")
+  checkOutTime     String  @default("ก่อน 12:00")
+
+  // Tax — VAT is assumed INCLUDED in displayed prices per PRD
+  // ("ราคาที่แสดงเป็น all-inclusive"). We just split it out for transparency
+  // on the invoice/receipt. 0 = no VAT line shown. 7 = standard Thai VAT.
+  vatPercent       Decimal  @default(7) @db.Decimal(5, 2)
+  vatLabel         String   @default("VAT")
+
+  updatedAt        DateTime @updatedAt
+}
+
+/// Singleton — there should only ever be one row (id = "default")
+model PaymentSetting {
+  id                String       @id @default("default")
+  transferType      TransferType @default(PROMPTPAY)
+
+  // PromptPay fields
+  promptpayId       String?      // phone (08xxxxxxxx) or 13-digit ID
+  promptpayName     String?
+
+  // Bank account fields
+  bankName          String?      // e.g. SCB, KBANK
+  bankAccountNumber String?
+  bankAccountName   String?
+  /// Optional in BANK_ACCOUNT mode: if set, guest also sees a generated
+  /// PromptPay QR alongside the bank info — useful for hotels that
+  /// accept either method.
+  bankPromptpayId   String?
+
+  // Both — optional notes shown to guest
+  notes             String?
+
+  updatedAt         DateTime     @updatedAt
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  STAFF
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  phone        String?
+  passwordHash String?
+  provider     AuthProvider @default(EMAIL)
+  createdAt    DateTime     @default(now())
+  bookings     Booking[]
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         AdminRole @default(SUPER_ADMIN)
+  createdAt    DateTime  @default(now())
+}
+
+model RoomType {
+  id           String     @id @default(cuid())
+  name         String
+  description  String     @default("")
+  maxOccupancy Int
+  totalUnits   Int
+  imageUrls    String[]   @default([])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  rates        RoomRate[]
+  bookings     Booking[]
+}
+
+model RoomRate {
+  id         String   @id @default(cuid())
+  roomTypeId String
+  date       DateTime @db.Date
+  price      Decimal  @db.Decimal(10, 2)
+  createdAt  DateTime @default(now())
+
+  roomType RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([roomTypeId, date])
+  @@index([date])
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  roomTypeId      String
+  guestId         String?
+  checkIn         DateTime      @db.Date
+  checkOut        DateTime      @db.Date
+  totalPrice      Decimal       @db.Decimal(10, 2)
+  status          BookingStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(UNPAID)
+  paymentMethod   PaymentMethod @default(STRIPE)
+  stripeSessionId String?       @unique
+  slipUrl         String?
+  slipUploadedAt  DateTime?
+  slipVerifiedAt  DateTime?
+  slipVerifiedBy  String?
+  /// Set when admin marks the guest as checked out — frees the room from
+  /// inventory (availability only counts CONFIRMED bookings).
+  checkedOutAt    DateTime?
+  checkedOutBy    String?
+  /// Specific room number assigned by admin (e.g. "101", "A-204").
+  /// Free-text; not validated against inventory — purely informational.
+  roomNumber      String?
+  guestName       String
+  guestPhone      String
+  guestEmail      String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  roomType RoomType @relation(fields: [roomTypeId], references: [id])
+  guest    User?    @relation(fields: [guestId], references: [id])
+
+  @@index([roomTypeId, status, checkIn, checkOut])
+  @@index([guestId])
+  @@index([roomNumber])
+}

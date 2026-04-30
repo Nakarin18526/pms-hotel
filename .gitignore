@@ -1,0 +1,15 @@
+node_modules
+.next
+.turbo
+dist
+build
+coverage
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.idea
+.vscode
+prisma/migrations/dev.db*
+apps/api/uploads/

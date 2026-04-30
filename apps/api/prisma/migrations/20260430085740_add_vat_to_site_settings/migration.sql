@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "SiteSetting" ADD COLUMN     "vatLabel" TEXT NOT NULL DEFAULT 'VAT',
+ADD COLUMN     "vatPercent" DECIMAL(5,2) NOT NULL DEFAULT 7;

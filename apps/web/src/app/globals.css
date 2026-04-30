@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  /* OpenType features for sharper text */
+  font-feature-settings: "ss01", "ss02", "cv01", "cv11";
+}
+
+html,
+body {
+  @apply bg-ivory text-slate-900 antialiased;
+  font-feature-settings: "kern", "liga", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-thai), var(--font-body), -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Sukhumvit Set", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* Locale-specific font priority */
+.locale-en body {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+.locale-zh body {
+  font-family: var(--font-chinese), var(--font-body), -apple-system,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+.locale-th body {
+  font-family: var(--font-thai), var(--font-body), -apple-system,
+    "Sukhumvit Set", "Noto Sans Thai", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+}
+
+/* Numbers — tabular lining figures for prices, IDs, counts */
+.num,
+.tabular {
+  font-feature-settings: "tnum", "lnum";
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Price uses Inter exclusively for crispness */
+.price {
+  font-family: var(--font-body), -apple-system, sans-serif;
+  font-feature-settings: "tnum", "lnum", "ss01";
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  letter-spacing: 0.01em;
+}
+.btn-primary {
+  @apply btn bg-brand-700 text-white hover:bg-brand-800 shadow-soft hover:shadow-lift;
+}
+.btn-gold {
+  @apply btn bg-gold-600 text-white hover:bg-gold-700 shadow-soft hover:shadow-lift;
+}
+.btn-secondary {
+  @apply btn bg-white text-slate-800 border border-slate-300 hover:border-slate-400 hover:bg-slate-50;
+}
+.btn-ghost {
+  @apply btn text-slate-700 hover:bg-slate-100;
+}
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+.btn-lg {
+  @apply px-8 py-3 text-base;
+}
+
+/* ---------- Forms ---------- */
+.input {
+  @apply block w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-brand-600 focus:ring-2 focus:ring-brand-100 outline-none;
+  font-feature-settings: "tnum", "lnum";
+}
+.input:disabled {
+  @apply bg-slate-100 text-slate-500 cursor-not-allowed;
+}
+.label {
+  @apply block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase tracking-[0.08em];
+}
+
+/* ---------- Surfaces ---------- */
+.card {
+  @apply bg-white rounded-xl border border-slate-200/80 shadow-soft;
+}
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5;
+}
+
+/* ---------- Badges ---------- */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  letter-spacing: 0.02em;
+}
+.badge-success {
+  @apply badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20;
+}
+.badge-warning {
+  @apply badge bg-amber-50 text-amber-700 ring-1 ring-amber-600/20;
+}
+.badge-danger {
+  @apply badge bg-red-50 text-red-700 ring-1 ring-red-600/20;
+}
+.badge-neutral {
+  @apply badge bg-slate-100 text-slate-700 ring-1 ring-slate-600/10;
+}
+
+/* ---------- Misc ---------- */
+.divider {
+  @apply h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent my-6;
+}
+
+.eyebrow {
+  @apply text-[11px] uppercase tracking-[0.22em] font-semibold text-gold-700;
+}
+
+.gradient-mask {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* Selection */
+::selection {
+  @apply bg-brand-200 text-brand-900;
+}
+
+/* Scrollbar polish (webkit) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
+}
