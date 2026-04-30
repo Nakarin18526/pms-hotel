@@ -13,7 +13,11 @@
       "Bash(gh auth *)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(awk '{print \"total tracked-to-be:\", $1}')"
+      "Bash(awk '{print \"total tracked-to-be:\", $1}')",
+      "Bash(grep -iE \"\\\\.env$|\\\\.env\\\\.|secret|password\")",
+      "Bash(git commit -m ' *)",
+      "Bash(command -v gh)",
+      "Bash(brew list *)"
     ]
   }
 }
