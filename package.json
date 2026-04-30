@@ -1,64 +1,28 @@
 {
-  "name": "@pms/api",
-  "version": "1.0.0",
+  "name": "pms",
   "private": true,
-  "type": "commonjs",
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "prisma generate --schema=./prisma/schema.prisma && nest build",
-    "start": "node dist/main.js",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main.js",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "db:generate": "prisma generate --schema=./prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
-    "db:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
-    "db:studio": "prisma studio --schema=./prisma/schema.prisma"
-  },
-  "dependencies": {
-    "@nestjs/common": "^10.0.0",
-    "@nestjs/config": "^3.0.0",
-    "@nestjs/core": "^10.0.0",
-    "@nestjs/jwt": "^10.0.0",
-    "@nestjs/passport": "^10.0.0",
-    "@nestjs/platform-express": "^10.0.0",
-    "@prisma/client": "^5.22.0",
-    "bcryptjs": "^2.4.3",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "date-fns": "^3.0.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.0",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "promptpay-qr": "^0.5.0",
-    "qrcode": "^1.5.4",
-    "reflect-metadata": "^0.2.0",
-    "resend": "^3.0.0",
-    "rxjs": "^7.8.0",
-    "stripe": "^15.0.0"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "pnpm --filter @pms/api prisma generate",
+    "db:migrate": "pnpm --filter @pms/api prisma migrate dev",
+    "db:seed": "pnpm --filter @pms/api db:seed",
+    "db:studio": "pnpm --filter @pms/api prisma studio"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0",
-    "@nestjs/schematics": "^10.0.0",
-    "@nestjs/testing": "^10.0.0",
-    "@types/bcryptjs": "^2.4.2",
-    "@types/express": "^4.17.17",
-    "@types/jest": "^29.5.0",
-    "@types/multer": "^1.4.7",
-    "@types/node": "^20.0.0",
-    "@types/nodemailer": "^6.4.0",
-    "@types/passport-jwt": "^4.0.1",
-    "@types/qrcode": "^1.5.0",
-    "@types/supertest": "^6.0.0",
-    "jest": "^29.0.0",
-    "prisma": "^5.22.0",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.0.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.4.0"
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0",
+    "prettier": "^3.2.5"
   },
-  "prisma": {
-    "schema": "prisma/schema.prisma"
+  "engines": {
+    "node": ">=20"
   }
 }
